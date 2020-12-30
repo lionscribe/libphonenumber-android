@@ -1,0 +1,165 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
+
+def libraryVersionNameVal = '8.12.15.1'   // the first 3 parts are the metadata that this is based on
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 30
+        versionCode 1
+        versionName libraryVersionNameVal
+    }
+
+    flavorDimensions "type"
+    productFlavors {
+        geocoder {
+            dimension "type"
+        }
+        libphonenumber {
+            dimension "type"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs =
+                    [
+                            'src/libphonenumber/src',
+                            'src/internal/prefixmapper/src'
+                    ]
+            assets.srcDirs =
+                    [
+                            'src/libphonenumber/assets',
+                    ]
+            manifest.srcFile 'src/libphonenumber/AndroidManifest.xml'
+        }
+        libphonenumber {
+        }
+        geocoder {
+            java.srcDirs =
+                    [
+                            'src/geocoder/src',
+                            'src/carrier/src'
+                    ]
+            assets.srcDirs =
+                    [
+                            'src/geocoder/assets',
+                            'src/carrier/assets'
+                    ]
+
+        }
+    }
+
+    task sourcesJarLibphonenumber(type: Jar) {
+        classifier 'sources'
+        from sourceSets.main.java.srcDirs, sourceSets.libphonenumber.java.srcDirs
+    }
+
+    task sourcesJarGeocoder(type: Jar) {
+        classifier 'sources'
+        from sourceSets.main.java.srcDirs, sourceSets.geocoder.java.srcDirs
+    }
+
+    task javadocLibphonenumber(type: Javadoc) {
+        failOnError false
+        source sourceSets.main.java.sourceFiles, sourceSets.libphonenumber.java.sourceFiles
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += configurations.compile
+    }
+
+// build a jar with javadoc
+    task javadocJarLibphonenumber(type: Jar, dependsOn: javadocLibphonenumber) {
+        classifier 'javadoc'
+        from javadocLibphonenumber.destinationDir
+    }
+
+    task javadocGeocoder(type: Javadoc) {
+        failOnError false
+        source sourceSets.main.java.sourceFiles, sourceSets.geocoder.java.sourceFiles
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += configurations.compile
+    }
+
+// build a jar with javadoc
+    task javadocJarGeocoder(type: Jar, dependsOn: javadocGeocoder) {
+        classifier 'javadoc'
+        from javadocGeocoder.destinationDir
+    }
+
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            libphonenumber(MavenPublication) {
+                from components.libphonenumberRelease
+                artifact sourcesJarLibphonenumber
+                artifact javadocJarLibphonenumber
+                groupId = 'com.open.lionscribe.libphonenumber'
+                artifactId = 'libphonenumber'
+                version = libraryVersionNameVal
+                pom {
+                    name = 'libphonenumber-android'
+                    description = 'A designed for Android port of Google\'s libphonenumber library.'
+                    url = 'https://github.com/lionscribe/libphonenumber'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                }
+            }
+            geocoder(MavenPublication) {
+                from components.geocoderRelease
+                artifact sourcesJarGeocoder
+                artifact javadocJarGeocoder
+                groupId = 'com.open.lionscribe.libphonenumber'
+                artifactId = 'geocoder'
+                version = libraryVersionNameVal
+                pom {
+                    name = 'libphonenumber-geocoder-android'
+                    description = 'A designed for Android port of Google\'s libphonenumber-geocoder library'
+                    url = 'https://github.com/lionscribe/libphonenumber'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                url = 'https://api.bintray.com/maven/lionscribe/open/libphonenumber-android/'
+                credentials {
+                    username = properties.getProperty("bintray.user")
+                    password = properties.getProperty("bintray.apikey")
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+}
