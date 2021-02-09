@@ -39,7 +39,10 @@ android {
 
 dependencies {
     implementation project(path: ':library')
-    //implementation 'com.lionscribe.open:libphonenumber-android:libphonenumber:8.12.15.1'
+    // Uncomment following two lines (and comment previous line) for testing if probably uploaded to Maven
+    //geocoderImplementation 'com.lionscribe.open.libphonenumber:geocoder:8.12.15.4'
+    //libphonenumberImplementation 'com.lionscribe.open.libphonenumber:libphonenumber:8.12.15.4'
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'

@@ -1,9 +1,15 @@
 plugins {
     id 'com.android.library'
     id 'maven-publish'
+    id 'signing'
 }
 
-def libraryVersionNameVal = '8.12.15.1'   // the first 3 parts are the metadata that this is based on
+def isSnapShot = false
+
+def libraryVersionNameVal = '8.12.15.4'   // the first 3 parts are the metadata that this is based on
+
+if (isSnapShot)
+    libraryVersionNameVal += '-SNAPSHOT'
 
 android {
     compileSdkVersion 30
@@ -28,6 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -114,18 +121,31 @@ project.afterEvaluate {
                 from components.libphonenumberRelease
                 artifact sourcesJarLibphonenumber
                 artifact javadocJarLibphonenumber
-                groupId = 'com.open.lionscribe.libphonenumber'
+                groupId = 'com.lionscribe.open.libphonenumber'
                 artifactId = 'libphonenumber'
                 version = libraryVersionNameVal
                 pom {
                     name = 'libphonenumber-android'
                     description = 'A designed for Android port of Google\'s libphonenumber library.'
-                    url = 'https://github.com/lionscribe/libphonenumber'
+                    url = 'https://github.com/lionscribe/libphonenumber-android'
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
                             url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
+                    }
+                    developers {
+                        developer {
+                            name = 'lionscribe'
+                            email = 'lionscribe@lionscribe.com'
+                            organization = 'Lionscribe Software LLC'
+                            organizationUrl = 'http://lionscribe.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/lionscribe/libphonenumber-android.git'
+                        developerConnection = 'scm:git:ssh://github.com:lionscribe/libphonenumber-android.git'
+                        url = 'https://github.com/lionscribe/libphonenumber-android/tree/master'
                     }
                 }
             }
@@ -133,30 +153,53 @@ project.afterEvaluate {
                 from components.geocoderRelease
                 artifact sourcesJarGeocoder
                 artifact javadocJarGeocoder
-                groupId = 'com.open.lionscribe.libphonenumber'
+                groupId = 'com.lionscribe.open.libphonenumber'
                 artifactId = 'geocoder'
                 version = libraryVersionNameVal
                 pom {
                     name = 'libphonenumber-geocoder-android'
                     description = 'A designed for Android port of Google\'s libphonenumber-geocoder library'
-                    url = 'https://github.com/lionscribe/libphonenumber'
+                    url = 'https://github.com/lionscribe/libphonenumber-android'
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
                             url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
+                    developers {
+                        developer {
+                            name = 'lionscribe'
+                            email = 'lionscribe@lionscribe.com'
+                            organization = 'Lionscribe Software LLC'
+                            organizationUrl = 'http://lionscribe.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/lionscribe/libphonenumber-android.git'
+                        developerConnection = 'scm:git:ssh://github.com:lionscribe/libphonenumber-android.git'
+                        url = 'https://github.com/lionscribe/libphonenumber-android/tree/master'
+                    }
                 }
             }
         }
         repositories {
             maven {
-                url = 'https://api.bintray.com/maven/lionscribe/open/libphonenumber-android/'
+                url = libraryVersionNameVal.endsWith("-SNAPSHOT") ? 'https://oss.sonatype.org/content/repositories/snapshots' : 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
                 credentials {
-                    username = properties.getProperty("bintray.user")
-                    password = properties.getProperty("bintray.apikey")
+                    username = properties.getProperty("sonatype.user")
+                    password = properties.getProperty("sonatype.password")
                 }
             }
+        }
+
+        signing {
+            def signingKeyId = properties.getProperty("signing.keyId")
+            def signingPassword = properties.getProperty("signing.password")
+            def signingKey = new File("\\Users\\arye\\Repositories\\others\\.certificates\\lionscribe_0xD3FF76A6_SECRET.asc").text
+
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+            sign publishing.publications.libphonenumber
+            sign publishing.publications.geocoder
         }
     }
 }
