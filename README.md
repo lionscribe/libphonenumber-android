@@ -1,3 +1,4 @@
+
 <p align="right">
 <img src="https://travis-ci.org/google/libphonenumber.svg?branch=master">
 </p>
@@ -37,14 +38,17 @@ It also includes a demo app.
     phone number.
 
 
+# Before you start
+
+ - Add the following to your module build.gradle file in the dependencies section;
+     - If you only need phonelibnumber, add; `implementation 'com.lionscribe.open.libphonenumber:libphonenumber:8.12.18.1'`
+     - If you need phonelibnumber and offline-geocoder, add; `implementation 'com.lionscribe.open.libphonenumber:geocoder:8.12.18.1'`
+    - Do NOT add both!
+
+ - In your code, you should call `PhoneNumberUtil.init(context)`, before any call to `getInstance()`, preferably in the Application class. Alternately, you can use the `getInstance(context)` method.
+
+
 # Quick Examples
-
-Before you start!
-For the Android version, you should call `PhoneNumberUtil.init(context)`
-once in your app, preferably in the Application class. Alternately, you 
-can use the `getInstance(context)` method.
-....
-
 
 Let's say you have a string representing a phone number from Switzerland. This
 is how you parse/normalize it into a `PhoneNumber` object:

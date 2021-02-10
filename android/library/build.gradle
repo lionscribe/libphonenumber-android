@@ -6,7 +6,7 @@ plugins {
 
 def isSnapShot = false
 
-def libraryVersionNameVal = '8.12.15.4'   // the first 3 parts are the metadata that this is based on
+def libraryVersionNameVal = '8.12.18.1'   // the first 3 parts are the metadata that this is based on
 
 if (isSnapShot)
     libraryVersionNameVal += '-SNAPSHOT'
@@ -195,7 +195,7 @@ project.afterEvaluate {
         signing {
             def signingKeyId = properties.getProperty("signing.keyId")
             def signingPassword = properties.getProperty("signing.password")
-            def signingKey = new File("\\Users\\arye\\Repositories\\others\\.certificates\\lionscribe_0xD3FF76A6_SECRET.asc").text
+            def signingKey = new File(properties.getProperty("signing.key")).text
 
             useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
             sign publishing.publications.libphonenumber
