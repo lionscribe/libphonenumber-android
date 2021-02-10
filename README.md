@@ -40,12 +40,14 @@ It also includes a demo app.
 
 # Before you start
 
- - Add the following to your module build.gradle file in the dependencies section;
-     - If you only need phonelibnumber, add; `implementation 'com.lionscribe.open.libphonenumber:libphonenumber:8.12.18.1'`
-     - If you need phonelibnumber and offline-geocoder, add; `implementation 'com.lionscribe.open.libphonenumber:geocoder:8.12.18.1'`
-    - Do NOT add both!
+ 1.  Add the following to the dependencies section of your module's build.gradle file;
+     - If you only need phonelibnumber add;
+     `implementation 'com.lionscribe.open.libphonenumber:libphonenumber:8.12.18.1'`
+     - If you need phonelibnumber and offline-geocoder add; 
+     `implementation 'com.lionscribe.open.libphonenumber:geocoder:8.12.18.1'`
+     - Do NOT add both!
 
- - In your code, you should call `PhoneNumberUtil.init(context)`, before any call to `getInstance()`, preferably in the Application class. Alternately, you can use the `getInstance(context)` method.
+ 2.  In your code, you should call `PhoneNumberUtil.init(context)`, before any call to `getInstance()`, preferably in the Application class. Alternately, you can use the `getInstance(context)` method.
 
 
 # Quick Examples
