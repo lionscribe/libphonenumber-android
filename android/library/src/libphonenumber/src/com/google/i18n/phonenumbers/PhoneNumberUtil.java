@@ -1629,15 +1629,16 @@ public class PhoneNumberUtil {
     PhoneMetadata metadataForRegionCallingFrom = getMetadataForRegion(regionCallingFrom);
     String internationalPrefix = metadataForRegionCallingFrom.getInternationalPrefix();
 
-    // For regions that have multiple international prefixes, the international format of the
-    // number is returned, unless there is a preferred international prefix.
-    String internationalPrefixForFormatting = "";
-    if (SINGLE_INTERNATIONAL_PREFIX.matcher(internationalPrefix).matches()) {
-      internationalPrefixForFormatting = internationalPrefix;
-    } else if (metadataForRegionCallingFrom.hasPreferredInternationalPrefix()) {
-      internationalPrefixForFormatting =
-          metadataForRegionCallingFrom.getPreferredInternationalPrefix();
-    }
+// In general, if there is a preferred international prefix, use that. Otherwise, for regions
+      // that have multiple international prefixes, the international format of the number is
+      // returned since we would not know which one to use.
+      String internationalPrefixForFormatting = "";
+      if (metadataForRegionCallingFrom.hasPreferredInternationalPrefix()) {
+          internationalPrefixForFormatting =
+                  metadataForRegionCallingFrom.getPreferredInternationalPrefix();
+      } else if (SINGLE_INTERNATIONAL_PREFIX.matcher(internationalPrefix).matches()) {
+          internationalPrefixForFormatting = internationalPrefix;
+      }
 
     String regionCode = getRegionCodeForCountryCode(countryCallingCode);
     // Metadata cannot be null because the country calling code is valid.
